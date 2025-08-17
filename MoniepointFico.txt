@@ -1,0 +1,12 @@
+Moniepoint account - they need Fico's Nigerian Number
+Juliet has full access to the account. See if there is a way to add fico
+Day to day running - everything flows into the account. she follows up and calls for clarity
+they are still writing - no software used yet.
+They pay before access the gym
+there are daily, weekly and monthly plans.
+How can we verify that if 20 people come in, 20 people paid?
+Morning 7am - 11am 
+evening 7pm - 10pm
+30 People a day averagely.
+Laptop or desktop for simple data management
+Use R to analyse the business income reports

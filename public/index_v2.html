@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gym DBMS</title>
+</head>
+<body>
+    <h1>Apex Gym Management</h1>
+
+    <!-- Login -->
+    <div id="loginBox">
+        <h2>Login</h2>
+        <input id="username" placeholder="Username"><br>
+        <input id="password" type="password" placeholder="Password"><br>
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- Main app -->
+    <div id="app" style="display:none;">
+        <button onclick="logout()">Logout</button>
+
+        <h2>Register New Member</h2>
+	<input id="full_name" placeholder="Full Name">
+	<input id="phone" placeholder="Phone">
+	<input id="email" placeholder="Email">
+	<select id="gender">
+    	    <option value="Male" selected>Male</option>
+    	    <option value="Female">Female</option>
+	</select>
+	<select id="membership">
+    	    <option value="None" selected>None</option>
+    	    <option value="Weekly">Weekly</option>
+    	    <option value="Monthly">Monthly</option>
+	</select>
+	<button onclick="addUser()">Add</button>
+
+        <h2>Search Exiting Members & Log Visit</h2>
+        <input id="search" placeholder="Search Members" onkeyup="searchUsers()">
+	<select id="amount">
+    	    <option value="0" selected>0</option>
+    	    <option value="1000">1000</option>
+	    <option value="5000">5000</option>
+	    <option value="20000">20000</option>
+	</select>
+        <ul id="searchResults"></ul>
+               
+        <h2>View Members Visits</h2>
+        <input id="start_date" type="date">
+        <input id="end_date" type="date">
+        <button onclick="loadVisits()">Load Visits</button>
+        <ul id="visitsList"></ul>
+        <div id="totals"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
