@@ -1,90 +1,157 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Gym DBMS</title>
+    <title>Apex Gym DBMS</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .tabs { margin-top: 20px; }
-        .tab-buttons { margin-bottom: 10px; }
-        .tab-buttons button {
-            margin-right: 5px;
-            padding: 8px 15px;
-            border: none;
-            background: #ddd;
-            cursor: pointer;
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
         }
+
+        /* Centered fixed-width container */
+        #container {
+            width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Login box */
+        #loginBox, .tabs {
+            display: block;
+        }
+
+        input, select, button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        /* Tabs */
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 10px;
+            gap: 5px;
+        }
+
+        .tab-buttons button {
+            flex: 1;
+            background: #ddd;
+            color: black;
+        }
+
         .tab-buttons button.active {
             background: #4285f4;
             color: white;
         }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+
+        .tab-content { 
+            display: none; 
+        }
+        .tab-content.active { 
+            display: block; 
+        }
+
+        /* Dropdown and amount/button in a row for log visit */
+        #logVisitTab #userSelectRow {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        #logVisitTab #userSelectRow select,
+        #logVisitTab #userSelectRow input,
+        #logVisitTab #userSelectRow button {
+            flex: 1;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
     </style>
 </head>
 <body>
-    <h1>Apex Gym Management</h1>
+    <div id="container">
+        <h1>Apex Gym Management</h1>
 
-    <!-- Login -->
-    <div id="loginBox">
-        <h2>Login</h2>
-        <input id="username" placeholder="Username"><br>
-        <input id="password" type="password" placeholder="Password"><br>
-        <button onclick="login()">Login</button>
-    </div>
+        <!-- Login -->
+        <div id="loginBox">
+            <input id="username" placeholder="Username">
+            <input id="password" type="password" placeholder="Password">
+            <button onclick="login()">Login</button>
+        </div>
 
-    <!-- Main app -->
-    <div id="app" style="display:none;">
-        <button onclick="logout()">Logout</button>
+        <!-- Main app -->
+        <div id="app" style="display:none;">
+            <button onclick="logout()">Logout</button>
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <div class="tab-buttons">
-                <button onclick="openTab('registerTab')" class="active">Register Member</button>
-                <button onclick="openTab('logVisitTab')">Log Visit</button>
-                <button onclick="openTab('viewVisitsTab')">View Visits</button>
-            </div>
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab-buttons">
+                    <button onclick="openTab('registerTab')" class="active">Register Member</button>
+                    <button onclick="openTab('logVisitTab')">Log Visit</button>
+                    <button onclick="openTab('viewVisitsTab')">View Visits</button>
+                </div>
 
-            <!-- Register Tab -->
-            <div id="registerTab" class="tab-content active">
-                <h2>Register New Member</h2>
-                <input id="full_name" placeholder="Full Name">
-                <input id="phone" placeholder="Phone">
-                <input id="email" placeholder="Email">
-                <select id="gender">
-                    <option value="Male" selected>Male</option>
-                    <option value="Female">Female</option>
-                </select>
-                <select id="membership">
-                    <option value="None" selected>None</option>
-                    <option value="Weekly">Weekly</option>
-                    <option value="Monthly">Monthly</option>
-                </select>
-                <button onclick="addUser()">Add</button>
-            </div>
+                <!-- Register Tab -->
+                <div id="registerTab" class="tab-content active">
+                    <input id="full_name" placeholder="Full Name">
+                    <input id="phone" placeholder="Phone">
+                    <input id="email" placeholder="Email">
+                    <select id="gender">
+                        <option value="Male" selected>Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                    <select id="membership">
+                        <option value="None" selected>None</option>
+                        <option value="Daily">Daily</option>
+                        <option value="Weekly">Weekly</option>
+                        <option value="Monthly">Monthly</option>
+                    </select>
+                    <button onclick="addUser()">Add Member</button>
+                </div>
 
-	<!-- Log Visit Tab -->
-	<div id="logVisitTab" class="tab-content">
-    	    <h2>Search Members & Log Visit</h2>
-    	    <input id="search" placeholder="Search Members" onkeyup="searchUsers()">
-    	    <select id="searchDropdown" onchange="selectUser()"></select>
-   	    <select id="amount">
-        	<option value="0" selected>0</option>
-        	<option value="1000">1000</option>
-        	<option value="5000">5000</option>
-        	<option value="20000">20000</option>
-    	    </select>
-    	    <button onclick="logVisit()">Log Visit</button>
-	</div>
+                <!-- Log Visit Tab -->
+                <div id="logVisitTab" class="tab-content">
+                    <input id="search" placeholder="Search Members" onkeyup="searchUsers()">
+                    <div id="userSelectRow">
+                        <select id="searchDropdown" onchange="selectUser()"></select>
+                        <select id="amount">
+                            <option value="0" selected>0</option>
+                            <option value="1000">1000</option>
+                            <option value="5000">5000</option>
+                            <option value="20000">20000</option>
+			</select>
+                        <button onclick="logVisit()">Log Visit</button>
+                    </div>
+                </div>
 
-            <!-- View Visits Tab -->
-            <div id="viewVisitsTab" class="tab-content">
-                <h2>View Members Visits</h2>
-                <input id="start_date" type="date">
-                <input id="end_date" type="date">
-                <button onclick="loadVisits()">Load Visits</button>
-		<button onclick="exportVisitsCSV()">Export to CSV</button>
-                <ul id="visitsList"></ul>
-                <div id="totals"></div>
+                <!-- View Visits Tab -->
+                <div id="viewVisitsTab" class="tab-content">
+                    <input id="start_date" type="date">
+                    <input id="end_date" type="date">
+                    <button onclick="loadVisits()">Load Visits</button>
+                    <button onclick="exportVisitsCSV()">Export to CSV</button>
+                    <ul id="visitsList"></ul>
+                    <div id="totals"></div>
+                </div>
             </div>
         </div>
     </div>

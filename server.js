@@ -1,9 +1,12 @@
+require('dotenv').config();// load environment variable from .env
 const express = require('express');
 const bodyParser = require('body-parser');
 const sql = require('mssql');
 const path = require('path');
 const bcrypt = require('bcryptjs'); // <- bcryptjs instead of bcrypt
 const session = require('express-session');
+const ngrok = require("@ngrok/ngrok");
+const fs = require("fs");
 
 const app = express();
 app.use(bodyParser.json());
@@ -205,6 +208,30 @@ app.get('/visits', requireLogin, async (req, res) => {
 });
 
 // ===== Start Server =====
-app.listen(3000, () => {
-    console.log('Server running on http://localhost:3000');
+app.listen(3000, async () => {
+    console.log('✅ Server running on http://localhost:3000');
+
+    // Read token from token.txt
+    let NGROK_AUTHTOKEN;
+    try {
+        NGROK_AUTHTOKEN = fs.readFileSync(path.join(__dirname, "token.txt"), "utf8").trim();
+        if (!NGROK_AUTHTOKEN) throw new Error("Token is empty");
+    } catch (err) {
+        console.error("❌ Failed to read ngrok token:", err.message);
+        process.exit(1);
+    }
+
+    try {
+        // Connect ngrok
+        const ngrokSession = await ngrok.connect({
+            authtoken: NGROK_AUTHTOKEN,
+            addr: 3000
+        });
+
+        // Call the .url() function to get the actual public URL
+        const publicUrl = await ngrokSession.url();  
+        console.log(`🌍 Public ngrok URL: ${publicUrl}`);
+    } catch (err) {
+        console.error("❌ Error starting ngrok:", err);
+    }
 });

@@ -151,40 +151,13 @@ async function loadVisits() {
     totalsDiv.innerHTML = '';
 
     if (data.visits.length === 0) {
-        list.innerHTML = "<p>No visits found</p>";
+        list.innerHTML = "<li>No visits found</li>";
     } else {
-        // Create table
-        const table = document.createElement('table');
-        table.style.width = "100%";
-        table.style.borderCollapse = "collapse";
-        table.innerHTML = `
-            <thead>
-                <tr>
-                    <th style="border:1px solid #ccc; padding:5px;">Name</th>
-                    <th style="border:1px solid #ccc; padding:5px;">Amount</th>
-                    <th style="border:1px solid #ccc; padding:5px;">Membership</th>
-                    <th style="border:1px solid #ccc; padding:5px;">Visit Date</th>
-                    <th style="border:1px solid #ccc; padding:5px;">Staff</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        `;
-
-        const tbody = table.querySelector('tbody');
-
         data.visits.forEach(v => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="border:1px solid #ccc; padding:5px;">${v.FullName}</td>
-                <td style="border:1px solid #ccc; padding:5px;">₦${v.Amount}</td>
-                <td style="border:1px solid #ccc; padding:5px;">${v.Membership}</td>
-                <td style="border:1px solid #ccc; padding:5px;">${new Date(v.VisitDate).toLocaleString()}</td>
-                <td style="border:1px solid #ccc; padding:5px;">${v.StaffUsername}</td>
-            `;
-            tbody.appendChild(tr);
+            const li = document.createElement('li');
+            li.textContent = `${v.FullName} - ₦${v.Amount} - ${v.Membership} - ${new Date(v.VisitDate).toLocaleString()} (by ${v.StaffUsername})`;
+            list.appendChild(li);
         });
-
-        list.appendChild(table);
     }
 
     totalsDiv.textContent = `Total Entries: ${data.totals.TotalEntries} | Total Revenue: ₦${data.totals.TotalRevenue}`;
