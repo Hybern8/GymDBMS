@@ -34,7 +34,7 @@ app.use(session({
 
 // ===== Staff Registration (One-time) =====
 app.post('/staff/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { fullname, gender, email, username, password } = req.body;
 
     try {
         const pool = await sql.connect(dbConfig);
@@ -50,9 +50,12 @@ app.post('/staff/register', async (req, res) => {
 
         const hash = await bcrypt.hash(password, 10);
         await pool.request()
+            .input('FullName', sql.NVarChar, fullname)
+            .input('Gender', sql.NVarChar, gender)
+            .input('Email', sql.NVarChar, email)
             .input('Username', sql.NVarChar, username)
             .input('PasswordHash', sql.NVarChar, hash)
-            .query('INSERT INTO Staff (Username, PasswordHash) VALUES (@Username, @PasswordHash)');
+            .query('INSERT INTO Staff (FullName, Gender, Email, Username, PasswordHash) VALUES (@FullName, @Gender, @Email, @Username, @PasswordHash)');
 
         res.json({ message: 'Staff registered successfully' });
     } catch (err) {
@@ -205,6 +208,34 @@ app.get('/visits', requireLogin, async (req, res) => {
         console.error("Error in /visits:", err);
         res.status(500).json({ error: err.message });
     }
+});
+
+// ===== Get all Users or members of the Gym =====
+app.get('/users', /* requireLogin, */ async (req, res) => {
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request().query(`
+      SELECT Id, FullName, Phone, Gender, Email, Membership
+      FROM Users
+      ORDER BY FullName ASC
+    `);
+    res.json(result.recordset);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all staff
+app.get("/staff", async (req, res) => {
+  try {
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request().query(`
+      SELECT Id, FullName, Gender, Username FROM Staff ORDER BY FullName ASC
+    `);
+    res.json(result.recordset);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ===== Start Server =====
