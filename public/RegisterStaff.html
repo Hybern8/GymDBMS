@@ -94,6 +94,7 @@
                 <button onclick="openTab('viewMembersTab')">View Members</button>
                 <button onclick="openTab('viewStaffTab')">View Staff</button>
                 <button onclick="openTab('viewVisitsTab')">View Visits</button>
+                <button onclick="openTab('resetPasswordTab')">Reset Password</button>
             </div>
 
             <!-- Register Staff Tab -->
@@ -133,6 +134,24 @@
                 <ul id="visitsList"></ul>
                 <div id="totals"></div>
             </div>
+
+	    <!-- Reset Password Tab -->
+	    <div id="resetPasswordTab" class="tab-content">
+    		<h3>Admin Generate Token</h3>
+    		<input id="reset_username" placeholder="Staff Username">
+    		<button onclick="adminGenerateToken()">Generate Token</button>
+    		<p id="generatedToken"></p>
+
+    		<h3>Staff Reset Password</h3>
+    		<input id="staff_reset_username" placeholder="Username">
+    		<input id="reset_token_input" placeholder="Enter token">
+    		<input id="reset_new_password" type="password" placeholder="New password">
+    		<button onclick="staffResetPassword()">Reset Password</button>
+	    <p>
+  	    Forgot your password?  
+  	    <a href="passwordReset.html" target="_blank">Go to Reset Page</a>
+	    </p>
+	    </div>
         </div>
     </div>
 

@@ -7,6 +7,8 @@ const bcrypt = require('bcryptjs'); // <- bcryptjs instead of bcrypt
 const session = require('express-session');
 const ngrok = require("@ngrok/ngrok");
 const fs = require("fs");
+const crypto = require('crypto');
+//const bcrypt = require('bcrypt');
 
 const app = express();
 app.use(bodyParser.json());
@@ -236,6 +238,61 @@ app.get("/staff", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// Generate reset token (admin only)
+app.post('/staff/admin-generate-reset', async (req, res) => {
+    const { username } = req.body;
+    if (!username) return res.status(400).json({ error: "Username is required" });
+
+    try {
+        const pool = await sql.connect(dbConfig);
+        const token = crypto.randomBytes(16).toString('hex'); // 32-char token
+        const expiry = new Date(Date.now() + 3600 * 1000); // 1 hour expiry
+
+        const result = await pool.request()
+            .input('Username', sql.VarChar, username)
+            .input('Token', sql.VarChar, token)
+            .input('Expiry', sql.DateTime, expiry)
+            .query(`UPDATE Staff SET ResetToken=@Token, ResetTokenExpiry=@Expiry WHERE Username=@Username`);
+
+        if (result.rowsAffected[0] === 0) return res.status(404).json({ error: "Staff not found" });
+
+        res.json({ token, expiry });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Reset password with token
+app.post('/staff/reset-password', async (req, res) => {
+    const { username, token, newPassword } = req.body;
+    if (!username || !token || !newPassword) return res.status(400).json({ error: "All fields required" });
+
+    try {
+        const pool = await sql.connect(dbConfig);
+        const staffResult = await pool.request()
+            .input('Username', sql.VarChar, username)
+            .query('SELECT ResetToken, ResetTokenExpiry FROM Staff WHERE Username=@Username');
+
+        if (staffResult.recordset.length === 0) return res.status(404).json({ error: "Staff not found" });
+
+        const staff = staffResult.recordset[0];
+        if (staff.ResetToken !== token) return res.status(400).json({ error: "Invalid token" });
+        if (new Date(staff.ResetTokenExpiry) < new Date()) return res.status(400).json({ error: "Token expired" });
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await pool.request()
+            .input('Username', sql.VarChar, username)
+            .input('PasswordHash', sql.VarChar, hashedPassword)
+            .query('UPDATE Staff SET PasswordHash=@PasswordHash, ResetToken=NULL, ResetTokenExpiry=NULL WHERE Username=@Username');
+
+        res.json({ message: "Password successfully reset" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // ===== Start Server =====

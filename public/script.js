@@ -396,3 +396,49 @@ function exportStaffCSV() {
     link.click();
     document.body.removeChild(link);
 }
+
+// Admin generates token for staff
+async function adminGenerateToken() {
+    const username = document.getElementById("reset_username").value.trim();
+    if (!username) return alert("Enter staff username");
+
+    try {
+        const res = await fetch("/staff/admin-generate-reset", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            document.getElementById("generatedToken").textContent = 
+                `Token: ${data.token} (expires at ${new Date(data.expiry).toLocaleTimeString()})`;
+        } else {
+            alert(data.error);
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Failed to generate token");
+    }
+}
+
+// Staff resets password using token
+async function staffResetPassword() {
+    const username = document.getElementById("staff_reset_username").value.trim();
+    const token = document.getElementById("reset_token_input").value.trim();
+    const newPassword = document.getElementById("reset_new_password").value.trim();
+
+    if (!username || !token || !newPassword) return alert("All fields are required");
+
+    try {
+        const res = await fetch("/staff/reset-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, token, newPassword })
+        });
+        const data = await res.json();
+        alert(data.message || data.error);
+    } catch (err) {
+        console.error(err);
+        alert("Failed to reset password");
+    }
+}
