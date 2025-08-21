@@ -1,4 +1,4 @@
-require('dotenv').config();// load environment variable from .env
+//require('dotenv').config();// load environment variable from .env
 const express = require('express');
 const bodyParser = require('body-parser');
 const sql = require('mssql');
@@ -321,5 +321,76 @@ app.listen(3000, async () => {
         console.log(`🌍 Public ngrok URL: ${publicUrl}`);
     } catch (err) {
         console.error("❌ Error starting ngrok:", err);
+    }
+});
+
+// Chart data endpoint
+// graph 1 - amount by membership
+app.get("/chart-membership-amount", async (req, res) => {
+    try {
+        // Ensure connection
+        await sql.connect(dbConfig);
+
+        // Run aggregation query
+        const result = await sql.query(`
+            SELECT Membership, SUM(Amount) AS totalAmount
+            FROM Transformed
+            GROUP BY Membership
+            ORDER BY Membership
+        `);
+
+        res.json(result.recordset);
+    } catch (err) {
+        console.error("Chart query failed:", err);
+        res.status(500).json({ error: "Database error" });
+    }
+});
+// graph 2 - Gender vs Count of VisitDate
+app.get("/chart-gender-visits", async (req, res) => {
+    try {
+        await sql.connect(dbConfig);
+
+        const result = await sql.query(`
+            SELECT Gender, COUNT(VisitDate) AS visitCount
+            FROM Transformed
+            GROUP BY Gender
+        `);
+        res.json(result.recordset);
+    } catch (err) {
+        console.error("Error fetching gender visits chart data:", err);
+        res.status(500).json({ error: "Failed to fetch gender visits chart data" });
+    }
+});
+// graph 3 - Staff vs Count of VisitDate
+app.get("/chart-staff-activity", async (req, res) => {
+    try {
+        await sql.connect(dbConfig);
+
+        const result = await sql.query(`
+            SELECT Staff, COUNT(VisitDate) AS visitCounts
+            FROM Transformed
+            GROUP BY Staff
+        `);
+        res.json(result.recordset);
+    } catch (err) {
+        console.error("Error fetching staff visits chart data:", err);
+        res.status(500).json({ error: "Failed to fetch staff visits chart data" });
+    }
+});
+// graph 4 - Member vs Amount
+app.get("/chart-member-payment", async (req, res) => {
+    try {
+        await sql.connect(dbConfig);
+
+        const result = await sql.query(`
+            SELECT Member, SUM(Amount) AS totalAmount
+            FROM Transformed
+            GROUP BY Member
+            ORDER By Member
+        `);
+        res.json(result.recordset);
+    } catch (err) {
+        console.error("Error fetching member payments chart data:", err);
+        res.status(500).json({ error: "Failed to fetch member payments chart data" });
     }
 });
