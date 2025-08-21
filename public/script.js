@@ -37,6 +37,15 @@ async function addUser() {
 
     const data = await res.json();
     alert(data.message);
+
+    if (res.ok) {
+        // Clear fields after success
+        document.getElementById('full_name').value = "";
+        document.getElementById('phone').value = "";
+        document.getElementById('email').value = "";
+        document.getElementById('gender').selectedIndex = 0;
+        document.getElementById('membership').selectedIndex = 0;
+    }
 }
 
 let selectedUserId = null;
@@ -81,6 +90,8 @@ async function searchUsers() {
 function selectUser() {
     const dropdown = document.getElementById('searchDropdown');
     selectedUserId = dropdown.value;
+    // clear search
+    document.getElementById('search').value = "";
 }
 
 // Log a visit
@@ -98,6 +109,10 @@ async function logVisit() {
     const data = await res.json();
     if (res.ok) {
         alert(`Visit logged (Visit ID: ${data.visit_id})`);
+
+        // Reset selected user and amount field
+        selectedUserId = null;
+        document.getElementById('amount').value = "";
     } else {
         alert(data.error);
     }
@@ -283,7 +298,7 @@ async function loadUsers() {
         }
     } catch (err) {
         console.error("Error loading users:", err);
-        alert("Failed to load staff.");
+        alert("Failed to load users.");
     }
 }
 
@@ -412,6 +427,9 @@ async function adminGenerateToken() {
         if (res.ok) {
             document.getElementById("generatedToken").textContent = 
                 `Token: ${data.token} (expires at ${new Date(data.expiry).toLocaleTimeString()})`;
+                 
+            // Clear username field after success
+            document.getElementById("reset_username").value = '';
         } else {
             alert(data.error);
         }
@@ -437,6 +455,14 @@ async function staffResetPassword() {
         });
         const data = await res.json();
         alert(data.message || data.error);
+
+        if (res.ok) {
+            // ✅ Clear input fields after success
+            document.getElementById("staff_reset_username").value = '';
+            document.getElementById("reset_token_input").value = '';
+            document.getElementById("reset_new_password").value = '';
+        }
+        
     } catch (err) {
         console.error(err);
         alert("Failed to reset password");

@@ -42,3 +42,4 @@ How to autotask it.png
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.Rproj.user
