@@ -126,7 +126,7 @@ function exportVisitsCSV() {
 
     // Prepare CSV header
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Full Name,Membership,Amount,Visit Date,Staff\n";
+    csvContent += "Full Name,Membership,Amount, VAT,Visit Date,Time,Staff\n";
 
     // Add rows
     window.lastVisitsData.forEach(v => {
@@ -134,6 +134,7 @@ function exportVisitsCSV() {
             `"${v.FullName}"`,
             `"${v.Membership}"`,
             v.Amount,
+            v.VAT,
             new Date(v.VisitDate).toLocaleString(),
             `"${v.StaffUsername}"`
         ].join(",");
@@ -177,6 +178,7 @@ async function loadVisits() {
                 <tr>
                     <th style="border:1px solid #ccc; padding:5px;">Name</th>
                     <th style="border:1px solid #ccc; padding:5px;">Amount</th>
+                    <th style="border:1px solid #ccc; padding:5px;">VAT</th>
                     <th style="border:1px solid #ccc; padding:5px;">Membership</th>
                     <th style="border:1px solid #ccc; padding:5px;">Visit Date</th>
                     <th style="border:1px solid #ccc; padding:5px;">Staff</th>
@@ -189,11 +191,14 @@ async function loadVisits() {
 
         data.visits.forEach(v => {
             const tr = document.createElement('tr');
+            // Convert VisitDate to GMT+1
+            const visitDateWAT = new Date(v.VisitDate).toLocaleString('en-NG', { timeZone: 'Africa/Lagos' });
             tr.innerHTML = `
                 <td style="border:1px solid #ccc; padding:5px;">${v.FullName}</td>
                 <td style="border:1px solid #ccc; padding:5px;">₦${v.Amount}</td>
+                <td style="border:1px solid #ccc; padding:5px;">₦${v.VAT}</td>
                 <td style="border:1px solid #ccc; padding:5px;">${v.Membership}</td>
-                <td style="border:1px solid #ccc; padding:5px;">${new Date(v.VisitDate).toLocaleString()}</td>
+                <td style="border:1px solid #ccc; padding:5px;">${visitDateWAT}</td>
                 <td style="border:1px solid #ccc; padding:5px;">${v.StaffUsername}</td>
             `;
             tbody.appendChild(tr);
@@ -202,7 +207,7 @@ async function loadVisits() {
         list.appendChild(table);
     }
 
-    totalsDiv.textContent = `Total Entries: ${data.totals.TotalEntries} | Total Revenue: ₦${data.totals.TotalRevenue}`;
+    totalsDiv.textContent = `Total Entries: ${data.totals.TotalEntries} | Total Revenue: ₦${data.totals.TotalRevenue} | Total VAT: ₦${data.totals.TotalVAT}`;
 }
 // Register new staff with validation
 async function registerStaff() {

@@ -21,13 +21,12 @@ apex_run <- function() {
   save_transformed_data()
   print('Database updated successfully!')
   print('Closing connection to transformed database server...')
-  
-  # Save last_run
+    # Save last_run
   last_run_file <- paste0(file_path, "last_run_time.txt")
   writeLines(as.character(Sys.time()), last_run_file)
   print("'last_run' saved!")
   
-  print('Data pipeline completed')
+  print('Data pipeline closed')
 }
 
 apex_run()

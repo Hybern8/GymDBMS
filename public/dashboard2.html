@@ -1,28 +1,133 @@
-<body>
-  <h1>Gym Dashboard</h1>
-
-  <div class="dashboard-grid">
-    <div class="chart-container">
-      <h2>Membership vs Amount</h2>
-      <canvas id="membershipChart"></canvas>
-    </div>
-
-    <div class="chart-container">
-      <h2>Gender vs Visit Count</h2>
-      <canvas id="genderChart"></canvas>
-    </div>
-
-    <div class="chart-container">
-      <h2>Staff Activity</h2>
-      <canvas id="staffChart"></canvas>
-    </div>
-  </div>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Charts</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h2>Membership vs Amount</h2>
+  <canvas id="membershipChart"></canvas>
+
+  <h2>Gender vs Visit Count</h2>
+  <canvas id="genderChart"></canvas>
+
+  <h2>Staff Activity</h2>
+  <canvas id="staffChart"></canvas>
+
+  <h2>Staff Activity</h2>
+  <canvas id="memberChart"></canvas>
+
   <script>
-    // ... all your loadMembershipChart, loadGenderChart, loadStaffChart functions ...
+    // === Earning by Membership ===
+    async function loadMembershipChart() {
+      const res = await fetch("/chart-membership-amount");
+      const data = await res.json();
+      console.log("Membership Data:", data);
+
+      const labels = data.map(row => row.Membership);
+      const amounts = data.map(row => row.totalAmount);
+
+      const ctx = document.getElementById("membershipChart").getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Total Amount",
+            data: amounts,
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1
+          }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    // === Visits by Gender ===
+    async function loadGenderChart() {
+      const res = await fetch("/chart-gender-visits");
+      const data = await res.json();
+      console.log("Gender Data:", data);
+
+      const labels = data.map(row => row.Gender);
+      const counts = data.map(row => row.visitCount);
+
+      const ctx = document.getElementById("genderChart").getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Total Visits",
+            data: counts,
+            backgroundColor: "rgba(255, 99, 132, 0.6)",
+            borderColor: "rgba(255, 99, 132, 1)",
+            borderWidth: 1
+          }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    // === Staff Activity ===
+    async function loadStaffChart() {
+      const res = await fetch("/chart-staff-activity");
+      const data = await res.json();
+      console.log("Staff Data:", data);
+
+      const labels = data.map(row => row.Staff);
+      const counts = data.map(row => row.visitCounts);
+
+      const ctx = document.getElementById("staffChart").getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Staff Activity",
+            data: counts,
+            backgroundColor: "rgba(255, 99, 13, 0.6)",
+            borderColor: "rgba(255, 99, 13, 1)",
+            borderWidth: 1
+          }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    // === Member Payments ===
+    async function loadMemberChart() {
+      const res = await fetch("/chart-member-payment");
+      const data = await res.json();
+      console.log("Member Data:", data);
+
+      const labels = data.map(row => row.Member);
+      const counts = data.map(row => row.totalAmount);
+
+      const ctx = document.getElementById("memberChart").getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Member Payments",
+            data: counts,
+            backgroundColor: "rgba(55, 99, 13, 0.6)",
+            borderColor: "rgba(55, 99, 13, 1)",
+            borderWidth: 1
+          }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    // Load both charts
     loadMembershipChart();
     loadGenderChart();
     loadStaffChart();
+    loadMemberChart();
   </script>
 </body>
+</html>

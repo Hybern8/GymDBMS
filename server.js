@@ -8,6 +8,7 @@ const session = require('express-session');
 const ngrok = require("@ngrok/ngrok");
 const fs = require("fs");
 const crypto = require('crypto');
+const MSSQLStore = require('connect-mssql-v2');
 //const bcrypt = require('bcrypt');
 
 const app = express();
@@ -27,10 +28,29 @@ const dbConfig = {
 };
 
 // ===== Session Setup =====
+
+// read secret from file
+const sessionSecret = fs.readFileSync('./session.txt', 'utf8').trim();
+// Setup db
+const storeOptions = {
+    user: dbConfig.user,        // parsing from dbConfig
+    password: dbConfig.password,     // parsing from dbConfig
+    server: dbConfig.server,
+    database: dbConfig.database,
+    options: {
+        encrypt: true,
+        trustServerCertificate: true
+    },
+    table: 'Sessions',
+    ttl: 60 * 60* 1000,
+    autoRemove: true
+};
+
 app.use(session({
-    secret: 'your-secret-key', // change this
+    secret: sessionSecret, // change this
     resave: false,
     saveUninitialized: false,
+    store: new MSSQLStore(storeOptions),
     cookie: { maxAge: 60 * 60 * 1000 } // 1 hour
 }));
 
@@ -181,7 +201,7 @@ app.get('/visits', requireLogin, async (req, res) => {
             .input('StartDate', sql.DateTime, start)
             .input('EndDate', sql.DateTime, end)
             .query(`
-                SELECT v.Id AS VisitID, u.FullName, u.Membership, v.Amount, v.VisitDate,
+                SELECT v.Id AS VisitID, u.FullName, u.Membership, v.Amount, (v.Amount * 0.075) AS VAT, v.VisitDate,
                        s.Username AS StaffUsername
                 FROM Visits v
                 JOIN Users u ON v.UserId = u.Id
@@ -196,7 +216,8 @@ app.get('/visits', requireLogin, async (req, res) => {
             .input('EndDate', sql.Date, end)
             .query(`
                 SELECT COUNT(*) AS TotalEntries, 
-                       ISNULL(SUM(Amount), 0) AS TotalRevenue
+                       ISNULL(SUM(Amount), 0) AS TotalRevenue,
+                       ISNULL(SUM(Amount * 0.075), 0) AS TotalVAT
                 FROM Visits
                 WHERE CAST(VisitDate AS DATE) BETWEEN @StartDate AND @EndDate
             `);

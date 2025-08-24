@@ -10,10 +10,12 @@ run_model_1 <- function() {
   # Read last_run
   last_run <- as.POSIXct(readLines(paste0(file_path, "last_run_time.txt")), tz = "UTC")
   # Read data from tables
+  # Convert date data to character to enable filter below
+  run <-as.character(last_run)
+  # Filter raw_visit data by last run date to pick only new records
   visits <- readRDS(paste0(file_deposit, "raw.visits.RDS")) %>% 
-    filter(VisitDate > last_run)
+    filter(VisitDate > run)
   users <- readRDS(paste0(file_deposit, "raw.users.RDS"))
-  region <- readRDS(paste0(file_deposit, "raw.users.RDS"))
   staff <- readRDS(paste0(file_deposit, "raw.staff.RDS"))
   # Join tables
   df <- visits %>% 

@@ -39,12 +39,12 @@
 
   <div class="dashboard-grid">
     <div class="chart-container">
-      <h2>Membership vs Amount</h2>
+      <h2>Earnings by Membership</h2>
       <canvas id="membershipChart"></canvas>
     </div>
 
     <div class="chart-container">
-      <h2>Gender vs Visit Count</h2>
+      <h2>Visits by Gender</h2>
       <canvas id="genderChart"></canvas>
     </div>
 
@@ -60,7 +60,7 @@
   </div>
 
   <script>
-    // === Earning by Membership ===
+    // === Earnings by Membership ===
     async function loadMembershipChart() {
       const res = await fetch("/chart-membership-amount");
       const data = await res.json();
@@ -97,7 +97,7 @@
       const ctx = document.getElementById("staffChart").getContext("2d");
       new Chart(ctx, {
         type: "bar",
-        data: { labels, datasets: [{ label: "Staff Activity", data: counts, backgroundColor: "rgba(255, 99, 13, 0.6)", borderColor: "rgba(255, 99, 13, 1)", borderWidth: 1 }] },
+        data: { labels, datasets: [{ label: "Staff Activity", data: counts, backgroundColor: "rgba(230, 230, 250, 0.6)", borderColor: "rgba(230, 230, 250, 1)", borderWidth: 1 }] },
         options: { responsive: true, scales: { y: { beginAtZero: true } } }
       });
     }
@@ -111,7 +111,7 @@
       const ctx = document.getElementById("memberChart").getContext("2d");
       new Chart(ctx, {
         type: "bar",
-        data: { labels, datasets: [{ label: "Member Payments", data: counts, backgroundColor: "rgba(55, 99, 13, 0.6)", borderColor: "rgba(55, 99, 13, 1)", borderWidth: 1 }] },
+        data: { labels, datasets: [{ label: "Member Payments", data: counts, backgroundColor: "rgba(55, 99, 13, 0.25)", borderColor: "rgba(55, 99, 13, 1)", borderWidth: 1 }] },
         options: { responsive: true, scales: { y: { beginAtZero: true } } }
       });
     }
