@@ -19,6 +19,7 @@
 
 # production
 /build
+/raw_extract
 
 # misc
 .DS_Store
